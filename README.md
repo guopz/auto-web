@@ -61,11 +61,11 @@ cssmin: {
 ##### 基础教程
 学习地址：
 gulp api
-http://www.ydcss.com/archives/424
-gulp demo
-https://segmentfault.com/a/1190000000372547
-https://segmentfault.com/a/1190000002932998
-http://longlog.me/2017/01/09/gulp-rename/
+http://www.ydcss.com/archives/424<br>
+gulp demo<br>
+https://segmentfault.com/a/1190000000372547<br>
+https://segmentfault.com/a/1190000002932998<br>
+http://longlog.me/2017/01/09/gulp-rename/<br>
 
 常用插件
 http://www.cnblogs.com/Darren_code/p/gulp.html
