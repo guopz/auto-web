@@ -1,29 +1,48 @@
 var gulp = require('gulp'),
-	less = require('gulp-less'); // 编译less文件
-	uglify = require('gulp-uglify'); // 压缩js文件
-	concat = require('gulp-concat'); // 合并文件
-	minifycss = require('gulp-minify-css'); // 压缩css
+	less = require('gulp-less'), // 编译less文件
+	uglify = require('gulp-uglify'), // 压缩js文件
+	concat = require('gulp-concat'), // 合并文件
+	minifycss = require('gulp-minify-css'), // 压缩css
 	// concatcss = require('gulp-concat-css'); // 合并css
-	del = require('del'), // 文件删除模块
+	del = require('del'), // 文件删除模块cnpm
 	imagemin = require('gulp-imagemin'), // 图片压缩
-	cache = require('gulp-cache'); // 图片缓存避免二次压缩
+	cache = require('gulp-cache'), // 图片缓存避免二次压缩
 	htmlmin = require('gulp-htmlmin'), // 压缩 html
 	autoprefixer = require('gulp-autoprefixer'), // 自动添加 cs3前缀
-	rename = require('gulp-rename'); // 更改名字
+	rename = require('gulp-rename'), // 更改名字
+	header = require('gulp-header'), // 添加注释头
+	datetime = require('silly-datetime').format(new Date()), // 获取系统时间
+	debug = require('gulp-strip-debug'), // 删除console
+	removelog = require('gulp-remove-logging'); // 删除console
 
+// annotation
+var annotation = {
+	description: 'gulp-header',
+	author: 'GH',
+	versions: '0.0.1',
+	update: datetime
+};
+var banner = ['/**',
+	'* @description: <%= annotation.description %>',
+	'* @author: <%= annotation.author %>',
+	'* @versions: <%= annotation.versions %>',
+	'* @update: <%= annotation.update %>',
+	'*/',''
+].join('\n');
+// config
 var configSrc = {
-	js: './src/js/*.js',
-	css: './src/css/*.css',
+	js: './src/js/**/*.js',
+	css: './src/style/**/*.css',
 	less: './src/less/*.less',
-	img: './src/img/*.{png,jpg,gif}',
-	html: './src/view/*.html'
-}
+	img: './src/images/*.{png,jpg,gif}',
+	html: './src/*.html'
+};
 var configDest = {
-	js: './dist/js/',
-	css: './dist/css/',
-	img: './dist/img/',
-	html: './dist/view/'
-}
+	js: './dist1/js/',
+	css: './dist1/style/',
+	img: './dist1/images/',
+	html: './dist1/'
+};
 // 编译less文件并且添加前缀
 gulp.task('less',function(){
 	gulp.src(configSrc.less)
@@ -43,15 +62,17 @@ gulp.task('mincss',function(){
 	gulp.src(configSrc.css)
 		.pipe(minifycss())
 		.pipe(gulp.dest(configDest.css))
-		.pipe(concat('all.css'))
+		.pipe(rename({suffix: '.min'}))
+		.pipe(header(banner, { annotation: annotation}))
 		.pipe(gulp.dest(configDest.css));
 });
 
-// 合并 css 文件 使用并没有效果 并且 concat 使用效果一样（并没有发现其他问题）
-gulp.task('css',function(){
-	gulp.src('./scr/css/*.css')
+// 合并 css 文件
+gulp.task('css',function() {
+	gulp.src(configSrc.css)
 		.pipe(concat('all.css'))
-		.pipe(gulp.dest('./dist/css'));
+		.pipe(header(banner, { annotation }))
+		.pipe(gulp.dest(configDest.css))
 });
 
 // 压缩 js 文件
@@ -65,6 +86,8 @@ gulp.task('ugjs',function(){
 gulp.task('concat',function(){
 	gulp.src(configSrc.js)
 		.pipe(concat('all.js'))
+		// .pipe(debug())
+		.pipe(removelog())
 		.pipe(gulp.dest(configDest.js))
 });
 
@@ -72,10 +95,10 @@ gulp.task('concat',function(){
 // 删除文件
 gulp.task('clean:css',function(cb){
 	del([
-		'dist/',
+		// 'dist/',
 		// 不删除某个文件 
 		// '!dist/css/a.json'
-		'!dist/css/all.css'
+		'!dist/libs'
 	]);
 });
 
